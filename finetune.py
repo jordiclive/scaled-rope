@@ -138,7 +138,7 @@ def main():
 
         wandb.init(
             project=training_conf.wandb_project,
-            entity="jordanclive",
+            entity=training_conf.wandb_entity,
             resume=training_conf.resume_from_checkpoint,
             name=f"lora-rope-{training_conf.max_position_embeddings}-{training_conf.model_name_or_path.split('/')[-1]}",
             config=training_conf,
