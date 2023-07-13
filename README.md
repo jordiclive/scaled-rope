@@ -23,6 +23,10 @@ Replace `<your_override_config>` with your specific configuration specified in `
 
 **Please Note:** The current setup assumes linear interpolation and a Llama-based model, by setting `max_position_embeddings: 32768`. For example, if `interpolation_scale` is not set, it will be calculated as `2048 / config.max_position_embeddings = 0.0625`.
 
+## Data
+- Specify packed untokenized datasets on the hub under dataset_names e.g. (`Multi-Domain-Expert-Layers/the_pile_books3_packed_128k`)
+- If pretokenized=True, specify a single pre-tokenized dataset on the hub under dataset_names (`conceptofmind/rp-packed-32k-no-filter` for OpenLLaMA)
+
 ### Running on a Single Node
 
 Use the following commands for running on a single node:
