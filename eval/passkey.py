@@ -2,12 +2,13 @@ import argparse
 import random
 import re
 import sys
-import torch
 import warnings
-from transformers import AutoTokenizer, pipeline
+
+import torch
+from model_loader import *
 from tqdm import tqdm, trange
 from tqdm.contrib import tenumerate
-from model_loader import *
+from transformers import AutoTokenizer, pipeline
 
 # from https://github.com/epfml/landmark-attention/blob/main/llama/run_test.py
 
@@ -24,25 +25,28 @@ def generate_prompt(n_garbage):
     garbage_prefix = garbage_inf[:n_garbage_prefix]
     garbage_suffix = garbage_inf[:n_garbage_suffix]
     pass_key = random.randint(1, 50000)
-    information_line = f"The pass key is {pass_key}. Remember it. {pass_key} is the pass key."
+    information_line = (
+        f"The pass key is {pass_key}. Remember it. {pass_key} is the pass key."
+    )
     final_question = "What is the pass key? The pass key is"
     lines = [
         task_description,
         garbage_prefix,
         information_line,
         garbage_suffix,
-        final_question
+        final_question,
     ]
     return "\n".join(lines), pass_key
 
 
 def test_model(pipe, prompt_text, pass_key):
-    response = pipe(prompt_text, num_return_sequences=1, max_new_tokens=10)[
-        0]["generated_text"][len(prompt_text):]
+    response = pipe(prompt_text, num_return_sequences=1, max_new_tokens=10)[0][
+        "generated_text"
+    ][len(prompt_text) :]
     assert f"The pass key is {pass_key}" in prompt_text
 
     try:
-        pass_key = int(re.search(r'\d+', response).group())
+        pass_key = int(re.search(r"\d+", response).group())
     except:
         pass_key = response[:20]
 
@@ -52,14 +56,19 @@ def test_model(pipe, prompt_text, pass_key):
 def main(args):
     models = [x[0] for x in args.model]
     tokenizer = AutoTokenizer.from_pretrained(
-        models[0], model_max_length=sys.maxsize, padding_side="right", trust_remote_code=True)
+        models[0],
+        model_max_length=sys.maxsize,
+        padding_side="right",
+        trust_remote_code=True,
+    )
 
     if args.fixed_length:
         lengths = [args.fixed_length]
         tokens = [len(tokenizer.encode(generate_prompt(args.fixed_length)[0]))]
     else:
-        tokens = [x for x in range(
-            args.min_tokens, args.max_tokens + 1, args.tokens_step)]
+        tokens = [
+            x for x in range(args.min_tokens, args.max_tokens + 1, args.tokens_step)
+        ]
         lengths = []
         last_n = 0
         for target in tqdm(tokens, desc="Determining sequence lengths"):
@@ -76,13 +85,27 @@ def main(args):
     for model in tqdm(models, desc="Model", leave=False):
         torch.cuda.empty_cache()
 
-        loaded = load_model(model, args.load_in_8bit,
-                            args.load_in_4bit, args.max_tokens + args.tokens_step)
-        apply_patches(loaded, args.max_tokens + args.tokens_step, args.dynamic_ntk,
-                      args.dynamic_linear, args.ntk, args.linear, args.part_ntk)
+        loaded = load_model(
+            model,
+            args.load_in_8bit,
+            args.load_in_4bit,
+            args.max_tokens + args.tokens_step,
+        )
+        apply_patches(
+            loaded,
+            args.max_tokens + args.tokens_step,
+            args.dynamic_ntk,
+            args.dynamic_linear,
+            args.ntk,
+            args.linear,
+        )
 
-        pipe = pipeline("text-generation", model=loaded,
-                        tokenizer=tokenizer, pad_token_id=tokenizer.eos_token_id)
+        pipe = pipeline(
+            "text-generation",
+            model=loaded,
+            tokenizer=tokenizer,
+            pad_token_id=tokenizer.eos_token_id,
+        )
 
         result = [0] * len(lengths)
         for i, length in tenumerate(lengths, desc="Lengths", leave=False):
@@ -120,7 +143,6 @@ if __name__ == "__main__":
     parser.add_argument("--dynamic-ntk", type=float)
     parser.add_argument("--ntk", type=float)
     parser.add_argument("--linear", type=float)
-    parser.add_argument("--part-ntk", type=float)
     parser.add_argument("--load-in-8bit", action="store_true")
     parser.add_argument("--load-in-4bit", action="store_true")
     main(parser.parse_args())

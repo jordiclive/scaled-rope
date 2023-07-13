@@ -1,0 +1,120 @@
+defaults:
+  rng_seed: 0xa1221f97
+  learning_rate: 1e-5
+  gradient_checkpointing: false
+  gradient_accumulation_steps: 32
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_epsilon: 1e-12
+  weight_decay: 0.00
+  warmup_steps: 600
+  eval_steps: 200
+  save_strategy: steps
+  save_steps: 1000
+  num_train_epochs: 3
+  logging_steps: 10
+  max_grad_norm: 2.0
+  save_total_limit: 4
+  dtype: fp16
+  eval_accumulation_steps:
+  cache_dir: .cache
+  fuse_gelu: true
+  log_wandb: true
+  samples_mixing:
+  output_dir: saved_model
+  residual_dropout: 0.0
+  residual_dropout_lima: false
+  deepspeed_config: configs/zero_config.json
+  seed: 42
+  model_name_or_path: "openlm-research/open_llama_3b"
+  quantization: false
+  group_texts: True
+  streaming: False
+  use_xpos: False
+  fp8: False
+  ntk_alpha: None
+  use_flash_attention: True
+  position_interpolation_scale:
+  max_length:
+  pretokenized: False
+
+debug:
+  # Model
+  output_dir: llama_model_13b_lora
+  tokenizer_name: "openlm-research/open_llama_3b"
+  model_name_or_path: "openlm-research/open_llama_3b"
+  deepspeed_config: configs/zero2_config.json
+
+  # schedule
+  learning_rate: 5e-5
+  warmup_steps: 300
+  gradient_checkpointing: true
+  gradient_accumulation_steps: 8
+  per_device_train_batch_size: 24
+  per_device_eval_batch_size: 24
+  save_strategy: "steps"
+  save_total_limit: 3
+  eval_steps: 50
+  save_steps: 100
+  num_train_epochs: 12
+  evaluation_strategy: "steps"
+
+  #Guanaco specific
+  residual_dropout: 0.3
+  residual_dropout_lima: true
+  adam_beta2: 0.99
+
+  # Wandb
+  wandb_entity: "jordanclive"
+  wandb_project: "scaled-rope-lora"
+
+  # Flash/Lora
+  flash_patch: false
+  lora: true
+
+  # Linear Scaling
+  position_interpolation_scale: 0.5 #0.0625 #0.125 #0.25
+  max_position_embeddings: 4096 #32768 #16384 #8192
+  max_length: 4096 #32768 #16384 #8192
+
+
+lora-7b:
+  # Model
+  output_dir: llama_model_7b_lora
+  tokenizer_name: "huggyllama/llama-7b"
+  model_name_or_path: "huggyllama/llama-7b"
+  deepspeed_config: configs/zero2_config.json
+
+  # schedule
+  learning_rate: 1e-4
+  warmup_steps: 50
+  gradient_checkpointing: true
+  gradient_accumulation_steps: 16
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  save_strategy: "steps"
+  save_total_limit: 5
+  eval_steps: 100
+  save_steps: 100
+  num_train_epochs: 2
+  evaluation_strategy: "steps"
+
+  #Guanaco specific
+  residual_dropout: 0.3
+  residual_dropout_lima: true
+  adam_beta2: 0.99
+
+  # Wandb
+  wandb_entity: "jordanclive"
+  wandb_project: "lora-scaled-rope"
+
+  # Flash/Lora
+  flash_patch: true
+  lora: true
+
+  # Linear Scaling
+  max_position_embeddings: 32768 #32768 #16384 #8192
+  max_val_set: 100
+  dataset_name: "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"

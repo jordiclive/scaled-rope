@@ -1,14 +1,15 @@
 import argparse
-import datasets
-import numpy as np
-import evaluate
 import sys
-import torch
 import warnings
-from torch.nn import CrossEntropyLoss
-from transformers import AutoTokenizer
-from tqdm import tqdm
+
+import datasets
+import evaluate
+import numpy as np
+import torch
 from model_loader import *
+from torch.nn import CrossEntropyLoss
+from tqdm import tqdm
+from transformers import AutoTokenizer
 
 
 class Perplexity(evaluate.Metric):
@@ -25,11 +26,21 @@ class Perplexity(evaluate.Metric):
         )
 
     def _compute(
-        self, predictions, model, tokenizer, batch_size: int = 16, add_start_token: bool = True, device=None, max_length=None
+        self,
+        predictions,
+        model,
+        tokenizer,
+        batch_size: int = 16,
+        add_start_token: bool = True,
+        device=None,
+        max_length=None,
     ):
         if device is not None:
-            assert device in ["gpu", "cpu",
-                              "cuda"], "device should be either gpu or cpu."
+            assert device in [
+                "gpu",
+                "cpu",
+                "cuda",
+            ], "device should be either gpu or cpu."
             if device == "gpu":
                 device = "cuda"
         else:
@@ -40,14 +51,14 @@ class Perplexity(evaluate.Metric):
         # special token to also be the padding token
         if tokenizer.pad_token is None and batch_size > 1:
             existing_special_tokens = list(
-                tokenizer.special_tokens_map_extended.values())
+                tokenizer.special_tokens_map_extended.values()
+            )
             # check that the model already has at least one special token defined
             assert (
                 len(existing_special_tokens) > 0
             ), "If batch_size > 1, model must have at least one special token to use for padding. Please use a different model or set batch_size=1."
             # assign one of the special tokens to also be the pad token
-            tokenizer.add_special_tokens(
-                {"pad_token": existing_special_tokens[0]})
+            tokenizer.add_special_tokens({"pad_token": existing_special_tokens[0]})
 
         if add_start_token and max_length:
             # leave room for <BOS> token to be added:
@@ -73,8 +84,9 @@ class Perplexity(evaluate.Metric):
 
         # check that each input is long enough:
         if add_start_token:
-            assert torch.all(torch.ge(attn_masks.sum(1), 1)
-                             ), "Each input text must be at least one token long."
+            assert torch.all(
+                torch.ge(attn_masks.sum(1), 1)
+            ), "Each input text must be at least one token long."
         else:
             assert torch.all(
                 torch.ge(attn_masks.sum(1), 2)
@@ -90,26 +102,33 @@ class Perplexity(evaluate.Metric):
 
             if add_start_token:
                 bos_tokens_tensor = torch.tensor(
-                    [[tokenizer.bos_token_id]] * encoded_batch.size(dim=0)).to(device)
-                encoded_batch = torch.cat(
-                    [bos_tokens_tensor, encoded_batch], dim=1)
+                    [[tokenizer.bos_token_id]] * encoded_batch.size(dim=0)
+                ).to(device)
+                encoded_batch = torch.cat([bos_tokens_tensor, encoded_batch], dim=1)
                 attn_mask = torch.cat(
-                    [torch.ones(bos_tokens_tensor.size(), dtype=torch.int64).to(device), attn_mask], dim=1
+                    [
+                        torch.ones(bos_tokens_tensor.size(), dtype=torch.int64).to(
+                            device
+                        ),
+                        attn_mask,
+                    ],
+                    dim=1,
                 )
 
             labels = encoded_batch
 
             with torch.no_grad():
-                out_logits = model(
-                    encoded_batch, attention_mask=attn_mask).logits
+                out_logits = model(encoded_batch, attention_mask=attn_mask).logits
 
             shift_logits = out_logits[..., :-1, :].contiguous()
             shift_labels = labels[..., 1:].contiguous()
             shift_attention_mask_batch = attn_mask[..., 1:].contiguous()
 
             perplexity_batch = torch.exp(
-                (loss_fct(shift_logits.transpose(1, 2), shift_labels)
-                 * shift_attention_mask_batch).sum(1)
+                (
+                    loss_fct(shift_logits.transpose(1, 2), shift_labels)
+                    * shift_attention_mask_batch
+                ).sum(1)
                 / shift_attention_mask_batch.sum(1)
             )
 
@@ -121,29 +140,45 @@ class Perplexity(evaluate.Metric):
 def main(args):
     models = [x[0] for x in args.model]
     tokenizer = AutoTokenizer.from_pretrained(
-        models[0], model_max_length=sys.maxsize, trust_remote_code=True)
+        models[0], model_max_length=sys.maxsize, trust_remote_code=True
+    )
     tokenizer.pad_token = tokenizer.eos_token
 
     perplexity = Perplexity()
-    input_texts = datasets.load_dataset(args.dataset, name=args.subset if len(
-        args.subset) > 0 else None, split=args.split if len(args.split) > 0 else None)[args.feature][:args.samples]
+    input_texts = datasets.load_dataset(
+        args.dataset,
+        name=args.subset if len(args.subset) > 0 else None,
+        split=args.split if len(args.split) > 0 else None,
+    )[args.feature][: args.samples]
 
-    tokens = [x for x in range(
-        args.min_tokens, args.max_tokens + 1, args.tokens_step)]
+    tokens = [x for x in range(args.min_tokens, args.max_tokens + 1, args.tokens_step)]
 
     results = []
     for model in tqdm(models, desc="Model", leave=False):
         torch.cuda.empty_cache()
 
-        loaded = load_model(model, args.load_in_8bit,
-                            args.load_in_4bit, args.max_tokens)
-        apply_patches(loaded, args.max_tokens, args.dynamic_ntk,
-                      args.dynamic_linear, args.dynamic_part_ntk, args.ntk, args.linear, args.part_ntk)
+        loaded = load_model(
+            model, args.load_in_8bit, args.load_in_4bit, args.max_tokens
+        )
+        apply_patches(
+            loaded,
+            args.max_tokens,
+            args.dynamic_ntk,
+            args.dynamic_linear,
+            args.ntk,
+            args.linear,
+        )
 
         result = []
         for max_length in tokens:
-            ppl = perplexity.compute(model=loaded, tokenizer=tokenizer, predictions=input_texts,
-                                     batch_size=args.batch_size, add_start_token=tokenizer.bos_token is not None, max_length=max_length)["mean_perplexity"]
+            ppl = perplexity.compute(
+                model=loaded,
+                tokenizer=tokenizer,
+                predictions=input_texts,
+                batch_size=args.batch_size,
+                add_start_token=tokenizer.bos_token is not None,
+                max_length=max_length,
+            )["mean_perplexity"]
             print(f"{model}: {max_length}={ppl}")
             result.append(ppl)
 
@@ -173,9 +208,7 @@ if __name__ == "__main__":
     parser.add_argument("--dynamic-linear", action="store_true")
     parser.add_argument("--dynamic-ntk", type=float)
     parser.add_argument("--ntk", type=float)
-    parser.add_argument("--part-ntk", type=float)
     parser.add_argument("--linear", type=float)
-    parser.add_argument("--dynamic-part-ntk", action="store_true")
     parser.add_argument("--output-file", type=str)
     parser.add_argument("--load-in-8bit", action="store_true")
     parser.add_argument("--load-in-4bit", action="store_true")
