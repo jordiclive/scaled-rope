@@ -115,6 +115,7 @@ def main():
         )
 
     if training_conf.pretokenized is False:
+        # "Loads training_conf.dataset_name Text datasets that have been packed with <s> ... </s> but not tokenized
         train_dataset, eval_dataset = get_one_dataset(training_conf,max_val_set=training_conf.max_val_set)
         collate_fn = DataCollator(
             tokenizer,
@@ -122,7 +123,9 @@ def main():
             pad_to_multiple_of=16,
         )
     else:
-        train_dataset = datasets.load_dataset(training_conf.dataset_name)
+        # Loads pre-tokenized datasets (
+        train_dataset = datasets.load_dataset(training_conf.dataset_names[0])
+        train_dataset["labels"] = train_dataset["input_ids"].clone() # For CausalLM LM shifting is done in model forward.
         train_val_split = train_dataset['train'].train_test_split(test_size=training_conf.max_val_set, seed=42)
         eval_dataset = train_val_split['test']
         train_dataset = train_val_split['train']
@@ -164,6 +167,7 @@ def main():
         data_collator=collate_fn,
     )
     if training_conf.local_rank == 0:
+        #todo remove debug message
         print("Model....")
         print(model)
         b = next(iter(trainer.get_train_dataloader()))

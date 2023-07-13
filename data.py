@@ -97,7 +97,6 @@ def train_val_dataset(dataset, val_split=0.2):
 
 def get_one_dataset(
     conf,
-    dataset_name: str = None,
     val_split: float = 0.025,
     data_path: str = None,
     mode: str = "sft",
@@ -108,8 +107,8 @@ def get_one_dataset(
     # dataset_name = dataset_name.lower()
     train_datasets = []
     eval_datasets = []
-    for data_file in dataset_name.split(","):
-        dataset = LMDataset(dataset_name)
+    for data_file in conf.dataset_names:
+        dataset = LMDataset(data_file)
 
         # if eval not already defined
         if not ("eval" in locals() and "train" in locals()):

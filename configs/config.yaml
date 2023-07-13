@@ -78,6 +78,8 @@ debug:
   position_interpolation_scale: 0.5 #0.0625 #0.125 #0.25
   max_position_embeddings: 4096 #32768 #16384 #8192
   max_length: 4096 #32768 #16384 #8192
+  dataset_names:
+    - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
 
 
 lora-7b:
@@ -117,4 +119,5 @@ lora-7b:
   # Linear Scaling
   max_position_embeddings: 32768 #32768 #16384 #8192
   max_val_set: 100
-  dataset_name: "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
+  dataset_names:
+    - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
