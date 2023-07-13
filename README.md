@@ -40,5 +40,5 @@ Use the following commands for running on a single node:
 2. Run the script:
 
     ```
-    deepspeed --include=localhost:0,1,2,3,4,5,6,7 --master_port 61500 /mnt/data/jordiclive/scaled-rope/finetune.py --output_dir saved_ckpts_32k --configs defaults lora-7b --deepspeed
+    deepspeed --include=localhost:0,1,2,3,4,5,6,7 --master_port 61500 finetune.py --output_dir saved_ckpts_32k --configs defaults lora-7b --deepspeed
     ```
