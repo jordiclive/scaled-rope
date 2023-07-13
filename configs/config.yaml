@@ -121,3 +121,5 @@ lora-7b:
   max_val_set: 100
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
+  pretokenized: False
+
