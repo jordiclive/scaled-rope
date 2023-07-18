@@ -52,6 +52,8 @@ def main():
         eval_accumulation_steps=training_conf.eval_accumulation_steps,
         resume_from_checkpoint=training_conf.resume_from_checkpoint,
         report_to="wandb" if training_conf.log_wandb else None,
+        ddp_find_unused_parameters=training_conf.ddp_find_unused_parameters,
+
     )
     last_checkpoint = (
         get_last_checkpoint(training_conf.output_dir)

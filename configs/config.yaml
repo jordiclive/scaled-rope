@@ -39,6 +39,7 @@ defaults:
   position_interpolation_scale:
   max_length:
   pretokenized: False
+  ddp_find_unused_parameters:
 
 debug:
   # Model
@@ -93,6 +94,7 @@ lora-7b:
   learning_rate: 1e-4
   warmup_steps: 50
   gradient_checkpointing: true
+  ddp_find_unused_parameters: false
   gradient_accumulation_steps: 16
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
