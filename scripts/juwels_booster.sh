@@ -23,14 +23,16 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 # Environment Configuration
 source /p/home/jusers/clive1/juwels/clive1/miniconda3/bin/activate jordan_lora
 export WANDB_API_KEY="d8216641d549f9bb3d0c5074baa39e15dfd55030"
-export WANDB_MODE="offline"
-export TRANSFORMERS_OFFLINE=1
 export PYTHONPATH="/p/home/jusers/clive1/juwels/clive1/scaled-rope-lora:$PYTHONPATH"
 export TRANSFORMERS_CACHE="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export HF_DATASETS_CACHE="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export HF_HOME="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export PATH="/p/software/juwelsbooster/stages/2023/software/OpenMPI/4.1.4-GCC-11.3.0/bin:$PATH"
+
+# Juwls specific env
 export CUDA_VISIBLE_DEVICES="0,1,2,3"
+export WANDB_MODE="offline"
+export TRANSFORMERS_OFFLINE=1
 
 # SLURM Host Configuration
 hostfile='/p/home/jusers/clive1/juwels/hostfiles/hostfile.txt'
