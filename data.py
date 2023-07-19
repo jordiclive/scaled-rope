@@ -22,7 +22,7 @@ class LMDataset(Dataset):
     def __init__(self, dataset_name, char_max_len: str = 200000) -> None:
         super().__init__()
         self.char_max_len = char_max_len
-        self.dataset = datasets.load_dataset(dataset_name)['train']
+        self.dataset = datasets.load_dataset(dataset_name)["train"]
 
     def __len__(self) -> int:
         return len(self.dataset)
@@ -123,6 +123,3 @@ def get_one_dataset(
     train = ConcatDataset(train_datasets)
     eval = ConcatDataset(eval_datasets)
     return train, eval
-
-
-
