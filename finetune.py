@@ -86,7 +86,7 @@ def main():
         config.part_ntk_scale = training_conf.part_ntk_scale
 
         if training_conf.position_interpolation_scale is None:
-            config.position_interpolation_scale = 2048 / config.max_position_embeddings
+            config.position_interpolation_scale = config.max_position_embeddings / 2048
         else:
             config.position_interpolation_scale = (
                 training_conf.position_interpolation_scale
@@ -154,7 +154,7 @@ def main():
 
         wandb.init(
             project=training_conf.wandb_project,
-            entity="jordanclive",
+            entity=training_conf.wandb_entity,
             resume=training_conf.resume_from_checkpoint,
             name=f"lora-rope-{training_conf.max_position_embeddings}-{training_conf.model_name_or_path.split('/')[-1]}",
             config=training_conf,
