@@ -17,7 +17,7 @@ class LlamaLinearScaledRotaryEmbedding(torch.nn.Module):
             device=self.inv_freq.device,
             dtype=self.inv_freq.dtype,
         )
-        t *= self.scale
+        t /= self.scale
         freqs = torch.einsum("i,j->ij", t, self.inv_freq)
         # Different from paper, but it uses a different permutation in order to obtain the same calculation
         emb = torch.cat((freqs, freqs), dim=-1)
@@ -37,7 +37,7 @@ class LlamaLinearScaledRotaryEmbedding(torch.nn.Module):
             t = torch.arange(
                 self.max_seq_len_cached, device=x.device, dtype=self.inv_freq.dtype
             )
-            t *= self.scale
+            t /= self.scale
             freqs = torch.einsum("i,j->ij", t, self.inv_freq)
             # Different from paper, but it uses a different permutation in order to obtain the same calculation
             emb = torch.cat((freqs, freqs), dim=-1).to(x.device)

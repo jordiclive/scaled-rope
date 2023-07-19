@@ -46,3 +46,7 @@ Use the following commands for running on a single node:
     ```
     deepspeed --include=localhost:0,1,2,3,4,5,6,7 --master_port 61500 finetune.py --output_dir saved_ckpts_32k --configs defaults lora-7b --deepspeed
     ```
+
+### Running on Multiple Nodes
+
+Example script: `scripts/juwels_booster.sh`

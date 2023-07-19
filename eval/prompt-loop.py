@@ -1,9 +1,7 @@
 import argparse
 import sys
 
-from datasets import load_dataset
-from model_loader import apply_patches, load_model
-from tqdm import tqdm
+from model_loader import add_args, load_model_and_apply_patches
 from transformers import AutoTokenizer, pipeline
 
 
@@ -13,23 +11,16 @@ def main(args):
     )
     tokenizer.pad_token = tokenizer.eos_token
 
-    model = load_model(
-        args.model, args.load_in_8bit, args.load_in_4bit, args.max_new_tokens
-    )
-    apply_patches(
-        model,
-        args.max_new_tokens,
-        args.dynamic_ntk,
-        args.dynamic_linear,
-        args.ntk,
-        args.linear,
-    )
+    model = load_model_and_apply_patches(args.model, args)
 
     pipe = pipeline(
         "text-generation",
         model=model,
         tokenizer=tokenizer,
         pad_token_id=tokenizer.eos_token_id,
+        temperature=args.temperature,
+        repetition_penalty=args.repetition_penalty,
+        do_sample=args.temperature is not None,
     )
 
     while True:
@@ -47,14 +38,10 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--model", type=str, required=True)
-    parser.add_argument("--dynamic-linear", action="store_true")
-    parser.add_argument("--dynamic-ntk", type=float)
-    parser.add_argument("--ntk", type=float)
-    parser.add_argument("--linear", type=float)
-    parser.add_argument("--load-in-8bit", action="store_true")
-    parser.add_argument("--load-in-4bit", action="store_true")
     parser.add_argument("--max-new-tokens", type=int, default=256)
     parser.add_argument("--input-file", type=str)
+    parser.add_argument("--temperature", type=float)
+    parser.add_argument("--repetition-penalty", type=float)
 
-    args = parser.parse_args()
+    args = add_args(parser).parse_args()
     main(args)

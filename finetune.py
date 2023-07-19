@@ -12,7 +12,7 @@ from transformers.training_args import OptimizerNames
 from utilities.config import argument_parsing, rank_zero_info
 from utilities.efficiency_utils import fuse_gelu
 
-from data import get_one_dataset, DataCollator
+from data import DataCollator, get_one_dataset
 
 
 def main():
@@ -53,8 +53,13 @@ def main():
         resume_from_checkpoint=training_conf.resume_from_checkpoint,
         report_to="wandb" if training_conf.log_wandb else None,
         ddp_find_unused_parameters=training_conf.ddp_find_unused_parameters,
-
     )
+    if training_conf.multinode:
+        device_count = torch.cuda.device_count()
+        rank = args.local_rank
+        device = rank % device_count
+        torch.cuda.set_device(device)
+        args.ddp_find_unused_parameters = False
     last_checkpoint = (
         get_last_checkpoint(training_conf.output_dir)
         if os.path.exists(training_conf.output_dir)
@@ -78,6 +83,7 @@ def main():
         config.max_position_embeddings = training_conf.max_position_embeddings
         config.transformer_engine = training_conf.fp8
         config.ntk_alpha = training_conf.ntk_alpha
+        config.part_ntk_scale = training_conf.part_ntk_scale
 
         if training_conf.position_interpolation_scale is None:
             config.position_interpolation_scale = 2048 / config.max_position_embeddings
@@ -86,11 +92,13 @@ def main():
                 training_conf.position_interpolation_scale
             )
 
+        if training_conf.use_ntk_v2:
+            config.part_ntk_scale = training_conf.position_interpolation_scale
+
         if training_conf.max_length is None:
             training_conf.max_length = config.max_position_embeddings
         model = LlamaForCausalLM.from_pretrained(
             training_conf.model_name_or_path,
-            # device_map={"": f"cuda:{int(os.environ.get('LOCAL_RANK', '0'))}"},
             torch_dtype=torch.bfloat16
             if training_conf.dtype == "bf16"
             else torch.float16,
@@ -118,7 +126,9 @@ def main():
 
     if training_conf.pretokenized is False:
         # "Loads training_conf.dataset_name Text datasets that have been packed with <s> ... </s> but not tokenized
-        train_dataset, eval_dataset = get_one_dataset(training_conf,max_val_set=training_conf.max_val_set)
+        train_dataset, eval_dataset = get_one_dataset(
+            training_conf, max_val_set=training_conf.max_val_set
+        )
         collate_fn = DataCollator(
             tokenizer,
             max_length=training_conf.max_length,
@@ -127,10 +137,14 @@ def main():
     else:
         # Loads pre-tokenized datasets (
         train_dataset = datasets.load_dataset(training_conf.dataset_names[0])
-        train_dataset["labels"] = train_dataset["input_ids"].clone() # For CausalLM LM shifting is done in model forward.
-        train_val_split = train_dataset['train'].train_test_split(test_size=training_conf.max_val_set, seed=42)
-        eval_dataset = train_val_split['test']
-        train_dataset = train_val_split['train']
+        train_dataset["labels"] = train_dataset[
+            "input_ids"
+        ].clone()  # For CausalLM LM shifting is done in model forward.
+        train_val_split = train_dataset["train"].train_test_split(
+            test_size=training_conf.max_val_set, seed=42
+        )
+        eval_dataset = train_val_split["test"]
+        train_dataset = train_val_split["train"]
         collate_fn = default_data_collator
 
     if training_conf.log_wandb and (
@@ -140,14 +154,12 @@ def main():
 
         wandb.init(
             project=training_conf.wandb_project,
-            entity=training_conf.wandb_entity,
+            entity="jordanclive",
             resume=training_conf.resume_from_checkpoint,
             name=f"lora-rope-{training_conf.max_position_embeddings}-{training_conf.model_name_or_path.split('/')[-1]}",
             config=training_conf,
         )
         wandb.config["_max_length"] = training_conf.max_length
-
-
 
     if training_conf.fuse_gelu:
         model = fuse_gelu(model)
@@ -169,16 +181,15 @@ def main():
         data_collator=collate_fn,
     )
     if training_conf.local_rank == 0:
-        #todo remove debug message
+        # todo remove debug message
         print("Model....")
         print(model)
         b = next(iter(trainer.get_train_dataloader()))
         print("\nInput shape Check:", b["input_ids"].shape)
         print("\nDecoded batch element:", tokenizer.decode(b["input_ids"][0].tolist()))
         print("\ntokens", b["input_ids"][:5])
-        print("tokenizer bos token",tokenizer.bos_token_id,tokenizer.bos_token)
-        print("tokenizer eos token",tokenizer.eos_token_id,tokenizer.eos_token)
-
+        print("tokenizer bos token", tokenizer.bos_token_id, tokenizer.bos_token)
+        print("tokenizer eos token", tokenizer.eos_token_id, tokenizer.eos_token)
 
     if args.resume_from_checkpoint is not None:
         checkpoint = args.resume_from_checkpoint

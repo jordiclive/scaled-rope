@@ -6,7 +6,7 @@ import datasets
 import evaluate
 import numpy as np
 import torch
-from model_loader import *
+from model_loader import add_args, load_model_and_apply_patches
 from torch.nn import CrossEntropyLoss
 from tqdm import tqdm
 from transformers import AutoTokenizer
@@ -157,17 +157,7 @@ def main(args):
     for model in tqdm(models, desc="Model", leave=False):
         torch.cuda.empty_cache()
 
-        loaded = load_model(
-            model, args.load_in_8bit, args.load_in_4bit, args.max_tokens
-        )
-        apply_patches(
-            loaded,
-            args.max_tokens,
-            args.dynamic_ntk,
-            args.dynamic_linear,
-            args.ntk,
-            args.linear,
-        )
+        loaded = load_model_and_apply_patches(model, args)
 
         result = []
         for max_length in tokens:
@@ -205,11 +195,5 @@ if __name__ == "__main__":
     parser.add_argument("--tokens-step", type=int, default=200)
     parser.add_argument("--split", type=str, default="test")
     parser.add_argument("--samples", type=int, default=50)
-    parser.add_argument("--dynamic-linear", action="store_true")
-    parser.add_argument("--dynamic-ntk", type=float)
-    parser.add_argument("--ntk", type=float)
-    parser.add_argument("--linear", type=float)
     parser.add_argument("--output-file", type=str)
-    parser.add_argument("--load-in-8bit", action="store_true")
-    parser.add_argument("--load-in-4bit", action="store_true")
-    main(parser.parse_args())
+    main(add_args(parser).parse_args())

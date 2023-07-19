@@ -13,6 +13,28 @@ def patch_llama_for_dynamic_scaled_rotary_embeddings(model, ntk):
         )
 
 
+def patch_llama_for_dynamic_part_ntk_rotary_embeddings(model, finetuned):
+    from .LlamaDynamicPartNTKScaledRotaryEmbedding import \
+        LlamaDynamicPartNTKScaledRotaryEmbedding
+
+    for each in model.model.layers:
+        each.self_attn.rotary_emb = LlamaDynamicPartNTKScaledRotaryEmbedding(
+            each.self_attn.head_dim,
+            finetuned=finetuned,
+            device=each.self_attn.rotary_emb.inv_freq.device,
+        )
+
+
+def patch_falcon_for_dynamic_part_ntk_rotary_embeddings(model):
+    from .FalconDynamicPartNTKScaledRotaryEmbedding import \
+        FalconDynamicPartNTKScaledRotaryEmbedding
+
+    for each in model.transformer.h:
+        each.self_attention.maybe_rotary = FalconDynamicPartNTKScaledRotaryEmbedding(
+            each.self_attention.head_dim
+        )
+
+
 def patch_llama_for_ntk_scaled_rotary_embeddings(model, alpha):
     from .LlamaNTKScaledRotaryEmbedding import LlamaNTKScaledRotaryEmbedding
 
@@ -30,6 +52,18 @@ def patch_llama_for_linear_scaled_rotary_embeddings(model, scale):
 
     for each in model.model.layers:
         each.self_attn.rotary_emb = LlamaLinearScaledRotaryEmbedding(
+            each.self_attn.head_dim,
+            scale=scale,
+            device=each.self_attn.rotary_emb.inv_freq.device,
+        )
+
+
+def patch_llama_for_part_ntk_scaled_rotary_embeddings(model, scale):
+    from .LlamaPartNTKScaledRotaryEmbedding import \
+        LlamaPartNTKScaledRotaryEmbedding
+
+    for each in model.model.layers:
+        each.self_attn.rotary_emb = LlamaPartNTKScaledRotaryEmbedding(
             each.self_attn.head_dim,
             scale=scale,
             device=each.self_attn.rotary_emb.inv_freq.device,
