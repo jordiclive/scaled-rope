@@ -5,7 +5,7 @@
 #SBATCH --gres=gpu:4
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
-#SBATCH --partition develgpus
+#SBATCH --partition develbooster
 
 # JUWELS Configuration
 conda deactivate
