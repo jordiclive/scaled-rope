@@ -169,7 +169,7 @@ lora-7b-llama2:
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
   pretokenized: False
-#  multinode: true
+  multinode: true
 
 lora-70b-llama2:
   # Model
@@ -177,7 +177,7 @@ lora-70b-llama2:
   tokenizer_name: "meta-llama/Llama-2-7b-hf"
   model_name_or_path: "meta-llama/Llama-2-7b-hf"
   deepspeed_config: configs/zero3_config.json
-  multinode: true
+#  multinode: true
 
   # schedule
   learning_rate: 1e-4
