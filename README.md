@@ -1,6 +1,8 @@
 # LoRA + Flash + DS 
 This project adds LoRA, Flash attn patch and DS (Deepspeed) to [Scaled Rope](https://github.com/jquesnelle/scaled-rope).
 
+Flash Attention 2 and Llama 2 ready 🚀
+
 ## Setup and Installation
 
 1. To install the necessary dependencies, use pip to install the required Python packages:
@@ -21,7 +23,8 @@ python --configs defaults <your_override_config>
 
 Replace `<your_override_config>` with your specific configuration specified in `configs/config.yaml`. Command line arguments can also be overridden.
 
-**Please Note:** The current setup assumes linear interpolation and a Llama-based model, by setting `max_position_embeddings: 32768`. For example, if `interpolation_scale` is not set, it will be calculated as `2048 / config.max_position_embeddings = 0.0625`.
+**Please Note:** This uses the HF recent PR, so models are HF compatible. Linear scaling argument: 'interpolation_factor', i.e. how much you want to scale the model. If set to None will scale `config.max_position_embeddings / model_max_length`.
+        
 
 ## Data
 - Specify packed untokenized datasets on the hub under dataset_names e.g. (`Multi-Domain-Expert-Layers/the_pile_books3_packed_128k`)
