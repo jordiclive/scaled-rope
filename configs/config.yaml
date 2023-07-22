@@ -36,7 +36,7 @@ defaults:
   fp8: False
   ntk_alpha: None
   use_flash_attention: True
-  position_interpolation_scale:
+  interpolation_factor:
   max_length:
   pretokenized: False
   part_ntk_scale:
@@ -78,7 +78,6 @@ debug:
   lora: true
 
   # Linear Scaling
-  position_interpolation_scale: 0.5 #0.0625 #0.125 #0.25
   max_position_embeddings: 4096 #32768 #16384 #8192
 
   max_length: 4096 #32768 #16384 #8192

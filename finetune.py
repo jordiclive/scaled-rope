@@ -4,9 +4,9 @@ import datasets
 import torch
 from lora import peft_model
 from scaled_rope.configuration_llama import LlamaConfig
-from scaled_rope.modelling_llama import LlamaForCausalLM
-from transformers import (LlamaTokenizer, LlamaTokenizerFast, Trainer,
-                          TrainingArguments, default_data_collator, set_seed)
+from transformers import (LlamaForCausalLM, LlamaTokenizer, LlamaTokenizerFast,
+                          Trainer, TrainingArguments, default_data_collator,
+                          set_seed)
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.training_args import OptimizerNames
 from utilities.config import argument_parsing, rank_zero_info
@@ -79,21 +79,14 @@ def main():
         tokenizer.model_max_length = training_conf.max_position_embeddings
 
         config = LlamaConfig.from_pretrained(training_conf.model_name_or_path)
-        config.use_xpos = training_conf.use_xpos
         config.max_position_embeddings = training_conf.max_position_embeddings
         config.transformer_engine = training_conf.fp8
-        config.ntk_alpha = training_conf.ntk_alpha
-        config.part_ntk_scale = training_conf.part_ntk_scale
 
-        if training_conf.position_interpolation_scale is None:
-            config.position_interpolation_scale = config.max_position_embeddings / 2048
+        if training_conf.interpolation_factor is None:
+            training_conf.interpolation_factor = config.max_position_embeddings / 2048
         else:
-            config.position_interpolation_scale = (
-                training_conf.position_interpolation_scale
-            )
-
-        if training_conf.use_ntk_v2:
-            config.part_ntk_scale = training_conf.position_interpolation_scale
+            config.interpolation_factor = training_conf.interpolation_factor
+        config.rope_scaling = {"type": "linear", "factor": config.interpolation_factor}
 
         if training_conf.max_length is None:
             training_conf.max_length = config.max_position_embeddings
