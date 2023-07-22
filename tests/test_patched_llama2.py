@@ -9,8 +9,6 @@ def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
 
     config.rope_scaling = {"type": "linear", "factor": interpolation_factor}
 
-    if training_conf.max_length is None:
-        training_conf.max_length = config.max_position_embeddings
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf")
     tokenizer.add_special_tokens({"pad_token": "</s>", "eos_token": "</s>", "sep_token": "<s>"})
 
