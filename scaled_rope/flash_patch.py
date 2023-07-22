@@ -6,7 +6,8 @@ from typing import Callable, Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import LlamaAttention, LlamaForCausalLM, LlamaModel
+from transformers import  LlamaForCausalLM, LlamaModel
+from transformers.models.llama.modeling_llama import LlamaAttention
 
 
 def compute_flash_attention(flash_attn, q, k, v, attention_mask=None, head_mask=None):
