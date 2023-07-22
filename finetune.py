@@ -182,12 +182,12 @@ def main():
         # todo remove debug message
         print("Model....")
         print(model)
-        b = next(iter(trainer.get_train_dataloader()))
-        print("\nInput shape Check:", b["input_ids"].shape)
-        print("\nDecoded batch element:", tokenizer.decode(b["input_ids"][0].tolist()))
-        print("\ntokens", b["input_ids"][:5])
-        print("tokenizer bos token", tokenizer.bos_token_id, tokenizer.bos_token)
-        print("tokenizer eos token", tokenizer.eos_token_id, tokenizer.eos_token)
+        # b = next(iter(trainer.get_train_dataloader()))
+        # print("\nInput shape Check:", b["input_ids"].shape)
+        # print("\nDecoded batch element:", tokenizer.decode(b["input_ids"][0].tolist()))
+        # print("\ntokens", b["input_ids"][:5])
+        # print("tokenizer bos token", tokenizer.bos_token_id, tokenizer.bos_token)
+        # print("tokenizer eos token", tokenizer.eos_token_id, tokenizer.eos_token)
 
     if args.resume_from_checkpoint is not None:
         checkpoint = args.resume_from_checkpoint
