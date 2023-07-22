@@ -100,6 +100,7 @@ def main():
             if training_conf.dtype == "bf16"
             else torch.float16,
             config=config,
+            use_auth_token=True
         )
         model.max_sequence_length = training_conf.max_position_embeddings
 
@@ -112,7 +113,7 @@ def main():
 
     # Use Flash attn
     if training_conf.flash_patch:
-        from scaled_rope.flash_patch import patch_model
+        from flash_patch import patch_model
 
         patch_model(
             model,
