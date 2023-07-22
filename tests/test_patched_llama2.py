@@ -1,6 +1,6 @@
 import torch
 from scaled_rope.flash_patch import patch_model
-from transformers import LlamaForCausalLM, AutoTokenizer,LlamaConfig,
+from transformers import LlamaForCausalLM, AutoTokenizer,LlamaConfig
 
 def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
     config = LlamaConfig.from_pretrained("meta-llama/Llama-2-7b-hf")
