@@ -60,5 +60,5 @@ deepspeed --master_port 12802 \
           --no_ssh_check \
           /p/home/jusers/clive1/juwels/clive1/scaled-rope/finetune.py \
           --output_dir saved_ckpts_32k \
-          --configs defaults lora-7b \
+          --configs defaults lora-7b-llama2 \
           --deepspeed

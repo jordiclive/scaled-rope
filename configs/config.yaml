@@ -169,7 +169,7 @@ lora-7b-llama2:
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
   pretokenized: False
-  multinode: true
+#  multinode: true
 
 lora-70b-llama2:
   # Model
