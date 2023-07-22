@@ -140,11 +140,11 @@ lora-7b-llama2:
   gradient_checkpointing: true
   ddp_find_unused_parameters: false
   gradient_accumulation_steps: 16
-  per_device_train_batch_size: 1
+  per_device_train_batch_size: 4
   per_device_eval_batch_size: 1
   save_strategy: "steps"
   save_total_limit: 5
-  eval_steps: 100
+  eval_steps: 200
   save_steps: 100
   num_train_epochs: 2
   evaluation_strategy: "steps"
@@ -163,7 +163,7 @@ lora-7b-llama2:
   lora: true
 
   # Linear Scaling
-  max_position_embeddings: 16384 #32768 #16384 #8192
+  max_position_embeddings: 8192 #32768 #16384 #8192
   max_val_set: 100
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
