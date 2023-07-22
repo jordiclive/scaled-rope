@@ -179,9 +179,9 @@ def main():
         data_collator=collate_fn,
     )
     if training_conf.local_rank == 0:
-        # todo remove debug message
         print("Model....")
         print(model)
+        # todo remove debug message
         # b = next(iter(trainer.get_train_dataloader()))
         # print("\nInput shape Check:", b["input_ids"].shape)
         # print("\nDecoded batch element:", tokenizer.decode(b["input_ids"][0].tolist()))
