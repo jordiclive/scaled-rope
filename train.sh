@@ -6,6 +6,7 @@ export TRANSFORMERS_CACHE="/p/home/jusers/clive1/juwels/clive1/transformers_cach
 export HF_DATASETS_CACHE="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export HF_HOME="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export PATH="/p/software/juwelsbooster/stages/2023/software/OpenMPI/4.1.4-GCC-11.3.0/bin:$PATH"
+export HUGGING_FACE_HUB_TOKEN="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"
 
 
 deepspeed /p/home/jusers/clive1/juwels/clive1/scaled-rope/finetune.py \
