@@ -15,7 +15,7 @@ defaults:
   save_steps: 1000
   num_train_epochs: 3
   logging_steps: 10
-  max_grad_norm: 2.0
+  max_grad_norm: 3.0
   save_total_limit: 4
   dtype: fp16
   eval_accumulation_steps:
