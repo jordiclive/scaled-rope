@@ -1,7 +1,7 @@
 # LoRA + Flash + DS 
 This project adds LoRA, Flash attn patch and DS (Deepspeed) to [Scaled Rope](https://github.com/jquesnelle/scaled-rope).
 
-Flash Attention 2 and Llama 2 ready 🚀
+Flash Attention 2 and LLaMA 2 ready 🚀
 
 ## Setup and Installation
 
@@ -23,7 +23,7 @@ python --configs defaults <your_override_config>
 
 Replace `<your_override_config>` with your specific configuration specified in `configs/config.yaml`. Command line arguments can also be overridden.
 
-**Please Note:** This uses the HF recent PR, so models are HF compatible. Linear scaling argument: 'interpolation_factor', i.e. how much you want to scale the model. If set to None will scale `config.max_position_embeddings / model_max_length`.
+**Please Note:** This uses the HF recent PR, so models are HF compatible. Linear scaling argument: 'interpolation_factor', i.e. how much you want to scale the model. If set to None will scale `config.max_position_embeddings / 4096`. As this is the default for LLaMA 2.
         
 
 ## Data
@@ -52,4 +52,4 @@ Use the following commands for running on a single node:
 
 ### Running on Multiple Nodes
 
-Example script: `scripts/juwels_booster.sh`
+Example script using the slurm launcher with deepspeed: `scripts/juwels_booster.sh`
