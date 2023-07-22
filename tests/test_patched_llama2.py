@@ -1,5 +1,5 @@
 import torch
-from scaled_rope.flash_patch import patch_model
+from flash_patch import patch_model
 from transformers import LlamaForCausalLM, AutoTokenizer,LlamaConfig
 
 def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
@@ -39,7 +39,7 @@ def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
         batch = batch.to(device2)
         out2 = patched_model(**batch).logits
 
-        diff = (out1.to(device) - out2) * batch["attention_mask"].unsqueeze(-1)
+        diff = (out1.to(device2) - out2) * batch["attention_mask"].unsqueeze(-1)
         assert (diff.abs() < 0.1).all()
 
     input_ids = torch.randint(0, model.config.vocab_size, size=(2, 10), device=device)
