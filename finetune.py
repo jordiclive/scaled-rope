@@ -82,7 +82,7 @@ def main():
         config.transformer_engine = training_conf.fp8
 
         if training_conf.interpolation_factor is None:
-            training_conf.interpolation_factor = config.max_position_embeddings / 2048
+            training_conf.interpolation_factor = config.max_position_embeddings / 4096 # LLama 2 default max position embeddings
         config.rope_scaling = {
             "type": "linear",
             "factor": training_conf.interpolation_factor,
