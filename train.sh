@@ -8,12 +8,7 @@ export HF_HOME="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export PATH="/p/software/juwelsbooster/stages/2023/software/OpenMPI/4.1.4-GCC-11.3.0/bin:$PATH"
 
 
-deepspeed --master_port 12802 \
-          --launcher slurm \
-          --hostfile '/p/home/jusers/clive1/juwels/hostfiles/hostfile.txt' \
-          --master_addr $MASTER_ADDR \
-          --no_ssh_check \
-          /p/home/jusers/clive1/juwels/clive1/scaled-rope/finetune.py \
+deepspeed /p/home/jusers/clive1/juwels/clive1/scaled-rope/finetune.py \
           --output_dir saved_ckpts_32k \
           --configs defaults lora-7b-llama2 \
           --deepspeed
