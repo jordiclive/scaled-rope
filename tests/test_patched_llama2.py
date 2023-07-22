@@ -5,11 +5,9 @@ from transformers import LlamaForCausalLM, AutoTokenizer,LlamaConfig,
 def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
     config = LlamaConfig.from_pretrained("meta-llama/Llama-2-7b-hf")
     config.max_position_embeddings = 8192
-    if training_conf.interpolation_factor is None:
-        training_conf.interpolation_factor = config.max_position_embeddings / 2048
-    else:
-        config.interpolation_factor = training_conf.interpolation_factor
-    config.rope_scaling = {"type": "linear", "factor": config.interpolation_factor}
+    interpolation_factor = config.max_position_embeddings / 2048
+
+    config.rope_scaling = {"type": "linear", "factor": interpolation_factor}
 
     if training_conf.max_length is None:
         training_conf.max_length = config.max_position_embeddings

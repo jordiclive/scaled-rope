@@ -90,9 +90,7 @@ def main():
 
         if training_conf.interpolation_factor is None:
             training_conf.interpolation_factor = config.max_position_embeddings / 2048
-        else:
-            config.interpolation_factor = training_conf.interpolation_factor
-        config.rope_scaling = {"type": "linear", "factor": config.interpolation_factor}
+        config.rope_scaling = {"type": "linear", "factor": training_conf.interpolation_factor}
 
         if training_conf.max_length is None:
             training_conf.max_length = config.max_position_embeddings
