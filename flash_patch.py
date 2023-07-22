@@ -186,6 +186,7 @@ def llama_forward_with_flash_attn(
                 f" {attn_output.size()}"
             )
     else:
+        raise ValueError('flash_attn not supported for this case')
         attn_weights = torch.matmul(
             query_states, key_states.transpose(2, 3)
         ) / math.sqrt(self.head_dim)

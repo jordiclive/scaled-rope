@@ -85,48 +85,6 @@ debug:
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
 
-  multinode: false
-lora-7b:
-  # Model
-  output_dir: llama_model_7b_lora
-  tokenizer_name: "huggyllama/llama-7b"
-  model_name_or_path: "huggyllama/llama-7b"
-  deepspeed_config: configs/zero2_config.json
-
-  # schedule
-  learning_rate: 1e-4
-  warmup_steps: 50
-  gradient_checkpointing: true
-  ddp_find_unused_parameters: false
-  gradient_accumulation_steps: 16
-  per_device_train_batch_size: 1
-  per_device_eval_batch_size: 1
-  save_strategy: "steps"
-  save_total_limit: 5
-  eval_steps: 100
-  save_steps: 100
-  num_train_epochs: 2
-  evaluation_strategy: "steps"
-
-  #Guanaco specific
-  residual_dropout: 0.3
-  residual_dropout_lima: true
-  adam_beta2: 0.99
-
-  # Wandb
-  wandb_entity: "jordanclive"
-  wandb_project: "lora-scaled-rope"
-
-  # Flash/Lora
-  flash_patch: true
-  lora: true
-
-  # Linear Scaling
-  max_position_embeddings: 32768 #32768 #16384 #8192
-  max_val_set: 100
-  dataset_names:
-    - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
-  pretokenized: False
 
 lora-7b-llama2:
   # Model
@@ -171,47 +129,5 @@ lora-7b-llama2:
   pretokenized: False
   multinode: true
 
-lora-70b-llama2:
-  # Model
-  output_dir: llama_model_7b_lora
-  tokenizer_name: "meta-llama/Llama-2-7b-hf"
-  model_name_or_path: "meta-llama/Llama-2-7b-hf"
-  deepspeed_config: configs/zero3_config.json
-#  multinode: true
 
-  # schedule
-  learning_rate: 1e-4
-  warmup_steps: 50
-  gradient_checkpointing: true
-  ddp_find_unused_parameters: false
-  gradient_accumulation_steps: 16
-  per_device_train_batch_size: 1
-  per_device_eval_batch_size: 1
-  save_strategy: "steps"
-  save_total_limit: 5
-  eval_steps: 100
-  save_steps: 100
-  num_train_epochs: 2
-  evaluation_strategy: "steps"
-
-  #Guanaco specific
-  residual_dropout: 0.3
-  residual_dropout_lima: true
-  adam_beta2: 0.99
-
-  # Wandb
-  wandb_entity: "jordanclive"
-  wandb_project: "lora-scaled-rope"
-
-  # Flash/Lora
-  flash_patch: true
-  lora: true
-
-  # Linear Scaling
-  max_position_embeddings: 32768 #32768 #16384 #8192
-  use_ntk_v2: false
-  max_val_set: 100
-  dataset_names:
-    - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
-  pretokenized: False
 
