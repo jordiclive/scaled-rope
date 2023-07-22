@@ -40,10 +40,10 @@ def peft_model(model, peft_config, model_name, int8_training=False, gradient_che
             f"Invalid model name '{model_name}'. The model name should contain 'falcon' or 'llama'"
         )
     config = LoraConfig(
-        r=peft_config.r,
-        lora_alpha=peft_config.alpha,
+        r=peft_config['r'],
+        lora_alpha=peft_config['alpha'],
         target_modules=target_modules,
-        lora_dropout=peft_config.dropout,
+        lora_dropout=peft_config['dropout'],
         bias="none",
         task_type="CAUSAL_LM",
     )
