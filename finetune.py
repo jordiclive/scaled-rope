@@ -166,6 +166,7 @@ def main():
         rank_zero_info("Using PEFT model")
         model = peft_model(
             model,
+            peft_config=training_conf.peft_config,
             model_name=training_conf.model_name_or_path,
             gradient_checkpointing=training_conf.gradient_checkpointing,
         )
@@ -179,15 +180,16 @@ def main():
         data_collator=collate_fn,
     )
     if training_conf.local_rank == 0:
-        # todo remove debug message
         print("Model....")
         print(model)
-        b = next(iter(trainer.get_train_dataloader()))
-        print("\nInput shape Check:", b["input_ids"].shape)
-        print("\nDecoded batch element:", tokenizer.decode(b["input_ids"][0].tolist()))
-        print("\ntokens", b["input_ids"][:5])
-        print("tokenizer bos token", tokenizer.bos_token_id, tokenizer.bos_token)
-        print("tokenizer eos token", tokenizer.eos_token_id, tokenizer.eos_token)
+        # todo remove debug message
+
+        # b = next(iter(trainer.get_train_dataloader()))
+        # print("\nInput shape Check:", b["input_ids"].shape)
+        # print("\nDecoded batch element:", tokenizer.decode(b["input_ids"][0].tolist()))
+        # print("\ntokens", b["input_ids"][:5])
+        # print("tokenizer bos token", tokenizer.bos_token_id, tokenizer.bos_token)
+        # print("tokenizer eos token", tokenizer.eos_token_id, tokenizer.eos_token)
 
     if args.resume_from_checkpoint is not None:
         checkpoint = args.resume_from_checkpoint

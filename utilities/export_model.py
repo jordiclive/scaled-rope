@@ -5,9 +5,7 @@ from pathlib import Path
 
 import torch
 from lora import peft_model
-from scaled_rope.configuration_llama import LlamaConfig
-from scaled_rope.modelling_llama import LlamaForCausalLM
-from transformers import GenerationConfig, LlamaTokenizerFast
+from transformers import LlamaConfig, LlamaForCausalLM, GenerationConfig, LlamaTokenizerFast
 
 
 def parse_args():
@@ -91,11 +89,7 @@ def get_model(
     tokenizer.model_max_length = max_position_embeddings
 
     config = LlamaConfig.from_pretrained(model_name)
-    config.use_xpos = False
-    config.max_position_embeddings = max_position_embeddings
-    config.transformer_engine = False
-    config.ntk_alpha = None
-    config.position_interpolation_scale = position_interpolation_scale
+    config.rope_scaling = {"type": "linear", "factor": position_interpolation_scale}
 
     model = LlamaForCausalLM.from_pretrained(
         model_name,

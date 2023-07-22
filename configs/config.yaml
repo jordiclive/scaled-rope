@@ -110,7 +110,6 @@ lora-7b-llama2:
 
   #Guanaco specific
   residual_dropout: 0.3
-  residual_dropout_lima: true
   adam_beta2: 0.99
 
   # Wandb
@@ -128,6 +127,12 @@ lora-7b-llama2:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
   pretokenized: False
   multinode: true
+  peft_config:
+    r: 64
+    alpha: 16
+    dropout: 0.05
+
+
 
 
 

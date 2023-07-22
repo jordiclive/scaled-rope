@@ -20,11 +20,11 @@ def prepare_model_for_gradient_checkpointing(model):
     return model
 
 
-def peft_model(model, model_name, int8_training=False, gradient_checkpointing=False):
+def peft_model(model, peft_config, model_name, int8_training=False, gradient_checkpointing=False):
 
     if "falcon" in model_name:
         target_modules = ["dense_4h_to_h", "dense", "query_key_value", "dense_h_to_4h"]
-        r = 64
+
     elif "llama" in model_name:
         target_modules = [
             "down_proj",
@@ -35,19 +35,15 @@ def peft_model(model, model_name, int8_training=False, gradient_checkpointing=Fa
             "up_proj",
             "v_proj",
         ]
-        if "65" in model_name:
-            r = 16
-        else:
-            r = 64
     else:
         raise ValueError(
             f"Invalid model name '{model_name}'. The model name should contain 'falcon' or 'llama'"
         )
     config = LoraConfig(
-        r=r,
-        lora_alpha=16,
+        r=peft_config.r,
+        lora_alpha=peft_config.alpha,
         target_modules=target_modules,
-        lora_dropout=0.05,
+        lora_dropout=peft_config.dropout,
         bias="none",
         task_type="CAUSAL_LM",
     )
