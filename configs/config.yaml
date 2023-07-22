@@ -41,6 +41,7 @@ defaults:
   pretokenized: False
   part_ntk_scale:
   ddp_find_unused_parameters:
+  multinode: false
 
 
 debug:
@@ -84,7 +85,7 @@ debug:
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
 
-
+  multinode: false
 lora-7b:
   # Model
   output_dir: llama_model_7b_lora
@@ -168,7 +169,7 @@ lora-7b-llama2:
   dataset_names:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
   pretokenized: False
-
+  multinode: true
 
 lora-70b-llama2:
   # Model
