@@ -6,8 +6,7 @@ from typing import Callable, Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from scaled_rope.modelling_llama import (LlamaAttention, LlamaForCausalLM,
-                                         LlamaModel)
+from transformers import LlamaAttention, LlamaForCausalLM, LlamaModel
 
 
 def compute_flash_attention(flash_attn, q, k, v, attention_mask=None, head_mask=None):
@@ -293,8 +292,9 @@ def patch_model(
     global FlashSelfAttention
     if flash_attention:
         try:
-            from flash_attn.modules.mha import \
-                FlashSelfAttention  # pyright: reportMissingImports=false
+            from flash_attn.modules.mha import (
+                FlashSelfAttention,
+            )  # pyright: reportMissingImports=false
         except ModuleNotFoundError:
             warnings.warn(
                 """\nmodule flash_attn not found - either install:

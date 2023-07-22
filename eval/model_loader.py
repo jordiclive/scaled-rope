@@ -10,7 +10,8 @@ from scaled_rope.patch import (
     patch_llama_for_dynamic_scaled_rotary_embeddings,
     patch_llama_for_linear_scaled_rotary_embeddings,
     patch_llama_for_ntk_scaled_rotary_embeddings,
-    patch_llama_for_part_ntk_scaled_rotary_embeddings)
+    patch_llama_for_part_ntk_scaled_rotary_embeddings,
+)
 from transformers import AutoConfig, AutoModelForCausalLM, BitsAndBytesConfig
 
 
