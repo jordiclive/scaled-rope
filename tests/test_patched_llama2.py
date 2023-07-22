@@ -3,13 +3,13 @@ from scaled_rope.flash_patch import patch_model
 from transformers import LlamaForCausalLM, AutoTokenizer,LlamaConfig
 
 def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
-    config = LlamaConfig.from_pretrained("meta-llama/Llama-2-7b-hf")
+    config = LlamaConfig.from_pretrained("meta-llama/Llama-2-7b-hf",use_auth_token=True)
     config.max_position_embeddings = 8192
     interpolation_factor = config.max_position_embeddings / 2048
 
     config.rope_scaling = {"type": "linear", "factor": interpolation_factor}
 
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf")
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf",use_auth_token=True)
     tokenizer.add_special_tokens({"pad_token": "</s>", "eos_token": "</s>", "sep_token": "<s>"})
 
     model = LlamaForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf", torch_dtype=dtype).to(device)
