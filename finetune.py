@@ -3,16 +3,9 @@ import os
 import datasets
 import torch
 from lora import peft_model
-from transformers import (
-    LlamaConfig,
-    LlamaForCausalLM,
-    LlamaTokenizer,
-    LlamaTokenizerFast,
-    Trainer,
-    TrainingArguments,
-    default_data_collator,
-    set_seed,
-)
+from transformers import (LlamaConfig, LlamaForCausalLM, LlamaTokenizer,
+                          LlamaTokenizerFast, Trainer, TrainingArguments,
+                          default_data_collator, set_seed)
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.training_args import OptimizerNames
 from utilities.config import argument_parsing, rank_zero_info
@@ -90,7 +83,10 @@ def main():
 
         if training_conf.interpolation_factor is None:
             training_conf.interpolation_factor = config.max_position_embeddings / 2048
-        config.rope_scaling = {"type": "linear", "factor": training_conf.interpolation_factor}
+        config.rope_scaling = {
+            "type": "linear",
+            "factor": training_conf.interpolation_factor,
+        }
 
         if training_conf.max_length is None:
             training_conf.max_length = config.max_position_embeddings
@@ -100,7 +96,7 @@ def main():
             if training_conf.dtype == "bf16"
             else torch.float16,
             config=config,
-            use_auth_token=True
+            use_auth_token=True,
         )
         model.max_sequence_length = training_conf.max_position_embeddings
 

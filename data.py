@@ -5,11 +5,9 @@ import datasets
 import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import ConcatDataset, Dataset, Subset
-from transformers.tokenization_utils_base import (
-    PaddingStrategy,
-    PreTrainedTokenizerBase,
-    TruncationStrategy,
-)
+from transformers.tokenization_utils_base import (PaddingStrategy,
+                                                  PreTrainedTokenizerBase,
+                                                  TruncationStrategy)
 
 
 class DatasetEntryLm(NamedTuple):

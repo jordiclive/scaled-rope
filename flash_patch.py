@@ -6,7 +6,7 @@ from typing import Callable, Optional, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import  LlamaForCausalLM, LlamaModel
+from transformers import LlamaForCausalLM, LlamaModel
 from transformers.models.llama.modeling_llama import LlamaAttention
 
 
@@ -293,9 +293,8 @@ def patch_model(
     global FlashSelfAttention
     if flash_attention:
         try:
-            from flash_attn.modules.mha import (
-                FlashSelfAttention,
-            )  # pyright: reportMissingImports=false
+            from flash_attn.modules.mha import \
+                FlashSelfAttention  # pyright: reportMissingImports=false
         except ModuleNotFoundError:
             warnings.warn(
                 """\nmodule flash_attn not found - either install:

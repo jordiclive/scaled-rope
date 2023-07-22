@@ -70,7 +70,7 @@ def argument_parsing(notebook=False, notebook_args=None):
 
     # Config from YAML
     conf = {}
-    configs = read_yamls("/p/home/jusers/clive1/juwels/clive1/scaled-rope/configs/")
+    configs = read_yamls("configs/")
 
     conf.update(configs["defaults"])
     try:

@@ -5,7 +5,8 @@ from pathlib import Path
 
 import torch
 from lora import peft_model
-from transformers import LlamaConfig, LlamaForCausalLM, GenerationConfig, LlamaTokenizerFast
+from transformers import (GenerationConfig, LlamaConfig, LlamaForCausalLM,
+                          LlamaTokenizerFast)
 
 
 def parse_args():

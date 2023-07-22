@@ -1,12 +1,8 @@
 import functools
 
 import torch
-from transformers.activations import (
-    FastGELUActivation,
-    GELUActivation,
-    NewGELUActivation,
-    QuickGELUActivation,
-)
+from transformers.activations import (FastGELUActivation, GELUActivation,
+                                      NewGELUActivation, QuickGELUActivation)
 
 
 def rsetattr(obj, attr, val):

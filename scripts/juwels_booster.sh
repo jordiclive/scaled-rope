@@ -23,6 +23,7 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 # Environment Configuration
 source /p/home/jusers/clive1/juwels/clive1/miniconda3/bin/activate jordan_lora
 export WANDB_API_KEY="d8216641d549f9bb3d0c5074baa39e15dfd55030"
+export HUGGING_FACE_HUB_TOKEN="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"
 export PYTHONPATH="/p/home/jusers/clive1/juwels/clive1/scaled-rope:$PYTHONPATH"
 export TRANSFORMERS_CACHE="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
 export HF_DATASETS_CACHE="/p/home/jusers/clive1/juwels/clive1/transformers_cache"
@@ -48,7 +49,6 @@ export MASTER_ADDR=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_PORT=12802
 export COUNT_NODE=`scontrol show hostnames "$SLURM_JOB_NODELIST" | wc -l`
 export DLTS_HOSTFILE=$hostfile
-export HUGGING_FACE_HUB_TOKEN="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"
 
 
 # Print System Information
