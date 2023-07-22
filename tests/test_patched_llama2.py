@@ -42,7 +42,7 @@ def test_flash_attention_patch(dtype=torch.float16, device="cuda:0"):
         diff = (out1.to(device2) - out2) * batch["attention_mask"].unsqueeze(-1)
         assert (diff.abs() < 0.1).all()
 
-    input_ids = torch.randint(0, model.config.vocab_size, size=(2, 10), device=device)
+    input_ids = torch.randint(0, model.config.vocab_size, size=(2, 10), device=device2)
     patched_model(input_ids).logits.mean().backward()
 
 
