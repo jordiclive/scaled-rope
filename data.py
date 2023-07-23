@@ -49,7 +49,7 @@ class DataCollator:
         truncation = TruncationStrategy.LONGEST_FIRST
         max_length = self.max_length
 
-        messages = messages.text
+        messages = messages.text[:20]
 
         flatten_message = self.tokenizer(
             "".join(messages),
