@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SLURM Configuration
 #SBATCH --account=cstdl
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --gres=gpu:4
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
