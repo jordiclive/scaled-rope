@@ -3,32 +3,38 @@ from pathlib import Path
 import torch
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
+def find_all_linear_names(bits, model):
+    if bits is not None:
+        import bitsandbytes as bnb
+        if bits == 4:
+            cls = bnb.nn.Linear4bitLt
+        elif bits == 8:
+            cls = bnb.nn.Linear8bitLt
+    else:
+        cls = torch.nn.Linear
+
+    lora_module_names = set()
+    for name, module in model.named_modules():
+        if isinstance(module, cls):
+            names = name.split(".")
+            lora_module_names.add(names[0] if len(names) == 1 else names[-1])
+
+    if "lm_head" in lora_module_names:  # needed for 16-bit
+        lora_module_names.remove("lm_head")
+
+    return list(lora_module_names)
+
 
 def peft_model(
-    model, peft_config, model_name, gradient_checkpointing=True
+    model, peft_config, gradient_checkpointing=True, bits=None
 ):
-
-    if "falcon" in model_name:
-        target_modules = ["dense_4h_to_h", "dense", "query_key_value", "dense_h_to_4h"]
-
-    elif "llama" in model_name:
-        target_modules = [
-            "down_proj",
-            "k_proj",
-            "q_proj",
-            "gate_proj",
-            "o_proj",
-            "up_proj",
-            "v_proj",
-        ]
-    else:
-        raise ValueError(
-            f"Invalid model name '{model_name}'. The model name should contain 'falcon' or 'llama'"
-        )
+    linear_names = find_all_linear_names(bits, model)
+    print('linear_names', linear_names)
+    print('PEFT config', peft_config)
     config = LoraConfig(
         r=peft_config["r"],
         lora_alpha=peft_config["alpha"],
-        target_modules=target_modules,
+        target_modules=linear_names,
         lora_dropout=peft_config["dropout"],
         bias="none",
         task_type="CAUSAL_LM",

@@ -178,8 +178,8 @@ def main():
         model = peft_model(
             model,
             peft_config=training_conf.peft_config,
-            model_name=training_conf.model_name_or_path,
             gradient_checkpointing=training_conf.gradient_checkpointing,
+            bits=4 if training_conf.load_in_4bit else (8 if training_conf.load_in_8bit else None),
         )
 
     trainer = Trainer(
