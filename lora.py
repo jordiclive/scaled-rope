@@ -28,7 +28,8 @@ def find_all_linear_names(bits, model):
 def peft_model(
     model, peft_config, gradient_checkpointing=True, bits=None
 ):
-    linear_names = find_all_linear_names(bits, model)
+    # linear_names = find_all_linear_names(bits, model)
+    linear_names = ['gate_proj', 'q_proj', 'k_proj', 'v_proj', 'down_proj', 'o_proj', 'up_proj']
     print('linear_names', linear_names)
     print('PEFT config', peft_config)
     config = LoraConfig(
