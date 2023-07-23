@@ -39,7 +39,6 @@ def peft_model(
         lora_dropout=peft_config["dropout"],
         bias="none",
         task_type="CAUSAL_LM",
-        is_trainable=True,
     )
 
     model = get_peft_model(model, config)
