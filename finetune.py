@@ -5,7 +5,7 @@ import torch
 from lora import peft_model
 from transformers import (LlamaConfig, LlamaForCausalLM, LlamaTokenizer,
                           LlamaTokenizerFast, Trainer, TrainingArguments,
-                          default_data_collator, set_seed)
+                          default_data_collator, set_seed,BitsAndBytesConfig)
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.training_args import OptimizerNames
 from utilities.config import argument_parsing, rank_zero_info
@@ -90,14 +90,29 @@ def main():
 
         if training_conf.max_length is None:
             training_conf.max_length = config.max_position_embeddings
+
+        torch_dtype = torch.bfloat16 if training_conf.dtype == "bf16" else torch.float16
+        model_kwargs = {}
+
+        if training_conf.load_in_4bit:
+            model_kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True,
+                llm_int8_threshold=6.0,
+                llm_int8_has_fp16_weight=False,
+                bnb_4bit_compute_dtype=torch_dtype,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+            )
+
         model = LlamaForCausalLM.from_pretrained(
-            training_conf.model_name_or_path,
-            torch_dtype=torch.bfloat16
-            if training_conf.dtype == "bf16"
-            else torch.float16,
-            config=config,
-            use_auth_token=True,
-        )
+                training_conf.model_name_or_path,
+                torch_dtype=torch_dtype,
+                config=config,
+                use_auth_token=True,
+                load_in_8bit=training_conf.load_in_8bit,
+                load_in_4bit=training_conf.load_in_4bit,
+                **model_kwargs
+            )
         model.max_sequence_length = training_conf.max_position_embeddings
 
     else:

@@ -1,27 +1,11 @@
 from pathlib import Path
 
 import torch
-from peft import LoraConfig, get_peft_model, prepare_model_for_int8_training
-
-
-def prepare_model_for_gradient_checkpointing(model):
-    r"""
-    Prepares the model for gradient checkpointing if necessary
-    """
-    if not getattr(model, "is_loaded_in_8bit", False):
-        if hasattr(model, "enable_input_require_grads"):
-            model.enable_input_require_grads()
-        else:
-
-            def make_inputs_require_grad(module, input, output):
-                output.requires_grad_(True)
-
-            model.get_input_embeddings().register_forward_hook(make_inputs_require_grad)
-    return model
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
 
 def peft_model(
-    model, peft_config, model_name, int8_training=False, gradient_checkpointing=False
+    model, peft_config, model_name, gradient_checkpointing=True
 ):
 
     if "falcon" in model_name:
@@ -51,11 +35,9 @@ def peft_model(
     )
 
     model = get_peft_model(model, config)
-    if int8_training:
-        model = prepare_model_for_int8_training(model)
 
     if gradient_checkpointing:
-        model = prepare_model_for_gradient_checkpointing(model)
+        model = prepare_model_for_kbit_training(model,use_gradient_checkpointing=gradient_checkpointing)
     model.print_trainable_parameters()
     return model
 
