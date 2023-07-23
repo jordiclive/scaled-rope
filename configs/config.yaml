@@ -137,8 +137,8 @@ lora-7b-llama2:
     - "Multi-Domain-Expert-Layers/the_pile_books3_packed_128k"
   pretokenized: False
   multinode: true
-  load_in_8bit: false
-  load_in_4bit: true
+  load_in_8bit: true
+  load_in_4bit: false
 
 lora-70b-llama2:
   output_dir: llama_model_70b_lora
