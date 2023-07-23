@@ -111,6 +111,7 @@ def main():
                 use_auth_token=True,
                 load_in_8bit=training_conf.load_in_8bit,
                 load_in_4bit=training_conf.load_in_4bit,
+                device_map={'':torch.cuda.current_device()},
                 **model_kwargs
             )
         model.max_sequence_length = training_conf.max_position_embeddings
