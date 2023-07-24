@@ -1,5 +1,5 @@
 # Multinode LoRA + Flash + DS 
-This project adds LoRA, Flash attn patch and DS (Deepspeed) to [Scaled Rope](https://github.com/jquesnelle/scaled-rope).
+This project adds LoRA, Flash attn patch and DS (Deepspeed) to [Scaled Rope](https://github.com/jquesnelle/scaled-rope) that can be run multinode.
 
 Flash Attention 2 and LLaMA 2 ready 🚀
 
